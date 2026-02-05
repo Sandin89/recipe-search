@@ -1,16 +1,26 @@
 from fastapi import FastAPI
-from app.services.recipe_loader import load_recipes
+from pydantic import BaseModel
+from typing import List, Optional
 
-API_VERSION = "0.1.0"
+from app.services.recipe_loader import load_recipes
+from app.services.search_service import search_recipes
+
+API_VERSION = "0.2.0"
 
 app = FastAPI(
     title="Recipe Search API",
     version=API_VERSION,
-    description="REST API for searching recipes based on ingredients or free-text queries.",
 )
 
-# Loaded once at startup to avoid re-parsing the large dataset per request
 RECIPES = []
+
+
+class SearchRequest(BaseModel):
+    query: Optional[str] = None
+    include: List[str] = []
+    exclude: List[str] = []
+    limit: int = 10
+    offset: int = 0
 
 
 @app.on_event("startup")
@@ -26,4 +36,21 @@ def health_check():
         "status": "ok",
         "version": API_VERSION,
         "recipes_loaded": len(RECIPES),
+    }
+
+
+@app.post("/search")
+def search(request: SearchRequest):
+    results = search_recipes(
+        recipes=RECIPES,
+        query=request.query,
+        include=request.include,
+        exclude=request.exclude,
+        limit=request.limit,
+        offset=request.offset,
+    )
+
+    return {
+        "count": len(results),
+        "results": results,
     }
