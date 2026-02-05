@@ -4,12 +4,10 @@ from typing import List, Dict, Optional
 def _normalize(text: str) -> str:
     return (text or "").lower().strip()
 
-
 def _recipe_text(recipe: Dict) -> str:
     name = recipe.get("name", "")
     ingredients = recipe.get("ingredients", "")
     return f"{name} {ingredients}".lower()
-
 
 def _matches_query(recipe: Dict, query: Optional[str]) -> bool:
     q = _normalize(query)
@@ -17,11 +15,9 @@ def _matches_query(recipe: Dict, query: Optional[str]) -> bool:
         return True
     return q in _recipe_text(recipe)
 
-
 def _contains_excluded(recipe: Dict, exclude: List[str]) -> bool:
     text = _recipe_text(recipe)
     return any(_normalize(word) and _normalize(word) in text for word in exclude)
-
 
 def _include_score(recipe: Dict, include: List[str]) -> int:
     text = _recipe_text(recipe)
@@ -32,7 +28,6 @@ def _include_score(recipe: Dict, include: List[str]) -> int:
             score += 1
     return score
 
-
 def _contains_all_includes(recipe: Dict, include: List[str]) -> bool:
     text = _recipe_text(recipe)
     for word in include:
@@ -40,7 +35,6 @@ def _contains_all_includes(recipe: Dict, include: List[str]) -> bool:
         if w and w not in text:
             return False
     return True
-
 
 def search_recipes(
     recipes: List[Dict],
@@ -74,7 +68,6 @@ def search_recipes(
 
     sliced = results[offset: offset + limit]
     return [recipe for _, recipe in sliced]
-
 
 def to_search_result(recipe: Dict) -> Dict:
     ingredients = recipe.get("ingredients", "") or ""

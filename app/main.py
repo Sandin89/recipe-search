@@ -16,7 +16,6 @@ app = FastAPI(
 RECIPES = []
 SEMANTIC_INDEX = SemanticIndex()
 
-
 class SearchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -25,7 +24,6 @@ class SearchRequest(BaseModel):
     exclude: List[str] = []
     limit: int = 10
     offset: int = 0
-
 
 @app.on_event("startup")
 def startup_event():
@@ -36,7 +34,6 @@ def startup_event():
     SEMANTIC_INDEX.build(RECIPES)
     print("Semantic index built")
 
-
 @app.get("/health")
 def health_check():
     return {
@@ -44,7 +41,6 @@ def health_check():
         "version": API_VERSION,
         "recipes_loaded": len(RECIPES),
     }
-
 
 @app.post("/search")
 def search(request: SearchRequest):
@@ -68,7 +64,6 @@ def search(request: SearchRequest):
             require_all_includes=bool(auto_include),
         )
 
-        # Fallback: om semantic gav 0, kör vanlig search
         if not results:
             results = search_recipes(
                 recipes=RECIPES,
