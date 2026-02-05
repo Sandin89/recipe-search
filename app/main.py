@@ -3,7 +3,8 @@ from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 from app.services.recipe_loader import load_recipes
-from app.services.search_service import search_recipes
+from app.services.search_service import search_recipes, to_search_result
+
 
 API_VERSION = "0.2.0"
 
@@ -53,6 +54,7 @@ def search(request: SearchRequest):
     )
 
     return {
-        "count": len(results),
-        "results": results,
-    }
+    "count": len(results),
+    "results": [to_search_result(r) for r in results],
+}
+

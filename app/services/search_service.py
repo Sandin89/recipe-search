@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 
 
+
 def _normalize(text: str) -> str:
     return (text or "").lower().strip()
 
@@ -9,6 +10,7 @@ def _recipe_text(recipe: Dict) -> str:
     name = recipe.get("name", "")
     ingredients = recipe.get("ingredients", "")
     return f"{name} {ingredients}".lower()
+
 
 
 def _matches_query(recipe: Dict, query: Optional[str]) -> bool:
@@ -59,3 +61,25 @@ def search_recipes(
 
     sliced = results[offset : offset + limit]
     return [recipe for _, recipe in sliced]
+
+
+
+def to_search_result(recipe: Dict) -> Dict:
+    ingredients = recipe.get("ingredients", "") or ""
+    short_ingredients = ingredients[:200]
+    if len(ingredients) > 200:
+        short_ingredients += "..."
+
+    recipe_id = None
+    _id = recipe.get("_id")
+    if isinstance(_id, dict):
+        recipe_id = _id.get("$oid")
+
+    return {
+        "id": recipe_id,
+        "name": recipe.get("name"),
+        "ingredients": short_ingredients,
+        "url": recipe.get("url"),
+        "source": recipe.get("source"),
+    }
+
