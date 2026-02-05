@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 
 from app.services.recipe_loader import load_recipes
@@ -16,6 +16,8 @@ RECIPES = []
 
 
 class SearchRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     query: Optional[str] = None
     include: List[str] = []
     exclude: List[str] = []
