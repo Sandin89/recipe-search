@@ -7,18 +7,15 @@ app = FastAPI(
     description="REST API for searching recipes based on ingredients or free-text queries."
 )
 
-
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 '''
-
 import json
 from pathlib import Path
 from typing import Iterator, Dict
 
 DATA_PATH = Path("data/20170107-061401-recipeitems.json")
-
 
 def load_recipes() -> Iterator[Dict]:
     """

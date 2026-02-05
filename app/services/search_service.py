@@ -1,7 +1,6 @@
 from typing import List, Dict, Optional
 
 
-
 def _normalize(text: str) -> str:
     return (text or "").lower().strip()
 
@@ -10,7 +9,6 @@ def _recipe_text(recipe: Dict) -> str:
     name = recipe.get("name", "")
     ingredients = recipe.get("ingredients", "")
     return f"{name} {ingredients}".lower()
-
 
 
 def _matches_query(recipe: Dict, query: Optional[str]) -> bool:
@@ -35,6 +33,15 @@ def _include_score(recipe: Dict, include: List[str]) -> int:
     return score
 
 
+def _contains_all_includes(recipe: Dict, include: List[str]) -> bool:
+    text = _recipe_text(recipe)
+    for word in include:
+        w = _normalize(word)
+        if w and w not in text:
+            return False
+    return True
+
+
 def search_recipes(
     recipes: List[Dict],
     query: Optional[str],
@@ -42,6 +49,7 @@ def search_recipes(
     exclude: List[str],
     limit: int,
     offset: int,
+    require_all_includes: bool = False,
 ) -> List[Dict]:
     results = []
 
@@ -51,22 +59,28 @@ def search_recipes(
         if exclude and _contains_excluded(recipe, exclude):
             continue
 
+        # här vill  jag vara extra strikt (t.ex. AI->översatt ingrediens),
+        # kräver jag att alla include-termer faktiskt finns i texten.
+        if include and require_all_includes and not _contains_all_includes(recipe, include):
+            continue
+
         score = _include_score(recipe, include) if include else 0
         results.append((score, recipe))
 
     results.sort(key=lambda x: x[0], reverse=True)
 
     offset = max(0, offset)
-    limit = max(1, min(100, limit))  # skydd: 1..100, borde räcka för denna uppgift, i annat fall ökar jag gränsen.
+    limit = max(1, min(100, limit))  # skydd: 1..100, borde räcka för denna uppgift
 
-    sliced = results[offset : offset + limit]
+    sliced = results[offset: offset + limit]
     return [recipe for _, recipe in sliced]
-
 
 
 def to_search_result(recipe: Dict) -> Dict:
     ingredients = recipe.get("ingredients", "") or ""
+    ingredients = " ".join(ingredients.split())  # normaliserar whitespace och/eller newlines
     short_ingredients = ingredients[:200]
+
     if len(ingredients) > 200:
         short_ingredients += "..."
 
@@ -82,4 +96,3 @@ def to_search_result(recipe: Dict) -> Dict:
         "url": recipe.get("url"),
         "source": recipe.get("source"),
     }
-
