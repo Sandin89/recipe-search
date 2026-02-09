@@ -53,7 +53,6 @@ def search_recipes(
         if exclude and _contains_excluded(recipe, exclude):
             continue
 
-        # här vill  jag vara extra strikt (t.ex. AI->översatt ingrediens),
         # kräver jag att alla include-termer faktiskt finns i texten.
         if include and require_all_includes and not _contains_all_includes(recipe, include):
             continue
@@ -64,14 +63,14 @@ def search_recipes(
     results.sort(key=lambda x: x[0], reverse=True)
 
     offset = max(0, offset)
-    limit = max(1, min(100, limit))  # skydd: 1..100, borde räcka för denna uppgift
+    limit = max(1, min(100, limit))  
 
     sliced = results[offset: offset + limit]
     return [recipe for _, recipe in sliced]
 
 def to_search_result(recipe: Dict) -> Dict:
     ingredients = recipe.get("ingredients", "") or ""
-    ingredients = " ".join(ingredients.split())  # normaliserar whitespace och/eller newlines
+    ingredients = " ".join(ingredients.split())  # normaliserar whitespace och/eller newlines.,
     short_ingredients = ingredients[:200]
 
     if len(ingredients) > 200:

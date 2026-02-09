@@ -4,10 +4,28 @@
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 
-After starting the server, open:
+
+
+När servern är uppe, open:
 - http://127.0.0.1:8000/docs (interactive Swagger UI)
 - http://127.0.0.1:8000/health
 
+```
+
+Arbetsprovet byggdes steg för steg med målet att alltid ha en fungerande lösning. Jag började med en enkel FastAPI  bas i main och jobbade sedan vidare i separata branches som testades innan de slogs ihop.
+
+Tidigt märkte jag att datasetet inte var vanlig JSON utan JSONL, vilket först orsakade problem vid inläsning. Det löstes genom att läsa filen rad för rad, vilket också blev en bättre lösning för ett så stort dataset.
+
+När grunden var på plats förbättrades sökningen successivt med include/exclude, pagination och tydligare validering för att undvika oväntade fel.
+
+I ett senare steg lades semantisk sök till för att göra fritextsökningar mer träffsäkra. Den används som ett stöd ovanpå den befintliga logiken, med fallback till klassisk sök om den inte ger resultat.
+
+Fokus genom hela arbetet har varit på fungerande kod, tydliga steg och att lösa riktiga problem på ett rimligt sätt.
+
+Jag föröskte hålla mig till att enbart göra uppgiften och inte "over-do" it med HTML/Jinja, utan hålla mig til lramen av uppgiften.
+Då uppgiften skulel vara inne under "kommande vecka" så tog jag min tid, testade och lät det hellre ta en dag extra än att skynda mig och kasta in det samma eftermiddag.
+
+Då alla bolag arbetar olika, vissa integrerar generativ AI och andra får absolut inte använda det, så valde jag att inte koppla på eng enerativ AI i uppgiften, för att få lite mer personliga svar via tokens. (Samt att detta kostar och skulle kräva att jag anger min personliga nyckel i koden, vilket är totalt nej!)
 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
